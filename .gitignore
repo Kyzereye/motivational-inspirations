@@ -1,0 +1,22 @@
+# Secrets
+.env
+
+# Instabot session files
+config/*.json
+config/*.checkpoint
+config/log/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archive (local backup, not for repo)
+_archive/
+
+# Posting images (local assets, not for repo)
+images/
+
+# OS / editor
+.DS_Store
+._*
