@@ -1,3 +1,2 @@
 facebook-sdk
 python-dotenv
-instabot

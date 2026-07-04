@@ -1,11 +1,6 @@
 # Secrets
 .env
 
-# Instabot session files
-config/*.json
-config/*.checkpoint
-config/log/
-
 # Python
 __pycache__/
 *.pyc
