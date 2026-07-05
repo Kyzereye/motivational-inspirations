@@ -1,4 +1,5 @@
 import os
+import time
 
 import facebook as fb
 from dotenv import load_dotenv
@@ -38,6 +39,19 @@ def get_photo_url(graph, photo_id):
     return max(images, key=lambda img: img.get('width', 0) * img.get('height', 0))['source']
 
 
+def wait_for_ig_container(ig_graph, container_id, timeout=60):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        status = ig_graph.get_object(container_id, fields='status_code')
+        code = status.get('status_code')
+        if code == 'FINISHED':
+            return
+        if code in ('ERROR', 'EXPIRED'):
+            raise ValueError(f'Instagram container {code}')
+        time.sleep(5)
+    raise TimeoutError('Instagram container not ready in time')
+
+
 def post_to_instagram(ig_graph, fb_graph, ig_account_id, photo_id, caption=''):
     image_url = get_photo_url(fb_graph, photo_id)
     container = ig_graph.put_object(
@@ -46,6 +60,7 @@ def post_to_instagram(ig_graph, fb_graph, ig_account_id, photo_id, caption=''):
         image_url=image_url,
         caption=caption,
     )
+    wait_for_ig_container(ig_graph, container['id'])
     return ig_graph.put_object(
         ig_account_id,
         'media_publish',

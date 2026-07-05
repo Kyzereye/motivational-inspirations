@@ -12,6 +12,9 @@ _archive/
 # Posting images (local assets, not for repo)
 images/
 
+# Cron / runtime logs
+post.log
+
 # OS / editor
 .DS_Store
 ._*
