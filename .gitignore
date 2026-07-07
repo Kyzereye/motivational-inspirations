@@ -12,8 +12,12 @@ _archive/
 # Posting images (local assets, not for repo)
 images/
 
+# Review symlinks (queue order for caption editing)
+review/
+
 # Cron / runtime logs
 post.log
+caption_batch.log
 
 # OS / editor
 .DS_Store

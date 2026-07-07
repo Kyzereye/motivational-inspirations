@@ -1,18 +1,37 @@
+import json
 import os
 import time
+from datetime import datetime
 
 import facebook as fb
 from dotenv import load_dotenv
 
+from caption_lib import get_caption_for_image
+
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 access_token = os.environ['FB_ACCESS_TOKEN']
 page_id = os.environ['FB_PAGE_ID']
 asafb = fb.GraphAPI(access_token)
 meta_user_token = os.environ.get('META_USER_ACCESS_TOKEN', '')
 asafb_ig = fb.GraphAPI(meta_user_token) if meta_user_token else None
-queue = os.path.join(os.path.dirname(__file__), 'list', 'queue.txt')
-posted_log = os.path.join(os.path.dirname(__file__), 'list', 'posted_log.txt')
+queue = os.path.join(BASE_DIR, 'list', 'queue.txt')
+posted_log = os.path.join(BASE_DIR, 'list', 'posted_log.txt')
+def log(message):
+    print(f'{datetime.now().isoformat(timespec="seconds")} {message}')
+
+
+def load_post_caption(filename):
+    try:
+        caption = get_caption_for_image(filename, BASE_DIR)
+        if caption:
+            return caption
+        log(f'No caption for {filename}, posting image only')
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        log(f'Caption warning for {filename}: {exc}')
+    return ''
 
 
 def ig_enabled():
@@ -89,17 +108,20 @@ for x in lines:
     lL.write(x + "\n")
 
 print(posted_image)
-image_path = os.path.join(os.path.dirname(__file__), 'images', posted_image)
+log(f'Starting post for {posted_image}')
+caption = load_post_caption(posted_image)
+image_path = os.path.join(BASE_DIR, 'images', posted_image)
 with open(image_path, 'rb') as image_file:
-    fb_result = asafb.put_photo(image=image_file, message="")
+    fb_result = asafb.put_photo(image=image_file, message=caption)
+log(f'Posted to Facebook: {posted_image}')
 
 if ig_enabled():
     if not asafb_ig:
-        print('Instagram post failed: META_USER_ACCESS_TOKEN not set')
+        log('Instagram post failed: META_USER_ACCESS_TOKEN not set')
     else:
         try:
             ig_account_id = get_ig_account_id(asafb_ig, page_id)
-            ig_result = post_to_instagram(asafb_ig, asafb, ig_account_id, fb_result['id'])
-            print('Posted to Instagram:', ig_result.get('id', ig_result))
+            ig_result = post_to_instagram(asafb_ig, asafb, ig_account_id, fb_result['id'], caption=caption)
+            log(f'Posted to Instagram: {ig_result.get("id", ig_result)}')
         except Exception as exc:
-            print('Instagram post failed:', exc)
+            log(f'Instagram post failed: {exc}')

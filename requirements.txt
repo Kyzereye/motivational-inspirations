@@ -1,2 +1,4 @@
 facebook-sdk
 python-dotenv
+Pillow
+pytesseract
