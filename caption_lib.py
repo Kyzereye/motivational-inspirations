@@ -13,15 +13,15 @@ BRAND_TAGS = [
 BRAND_PAIRS = [(0, 1), (1, 2), (0, 2), (2, 0), (1, 0), (2, 1)]
 
 DISCOVERY_POOLS = {
-    'love': ['#motivation', '#mindfulness', '#positivity', '#dailyinspiration'],
-    'discipline': ['#discipline', '#motivation', '#selfgrowth', '#mindset'],
-    'ownership': ['#leadership', '#mindset', '#selfgrowth', '#motivation'],
-    'mindset': ['#mindset', '#motivation', '#selfgrowth', '#dailyinspiration'],
-    'courage': ['#motivation', '#mindset', '#selfgrowth', '#dailyinspiration'],
-    'growth': ['#selfgrowth', '#motivation', '#mindset', '#dailyinspiration'],
-    'success': ['#motivation', '#motivationalquotes', '#mindset', '#selfgrowth'],
-    'peace': ['#mindfulness', '#positivity', '#dailyinspiration', '#motivation'],
-    'default': ['#motivation', '#dailyinspiration', '#motivationalquotes', '#quotes'],
+    'love': ['#love', '#kindness', '#compassion', '#heart'],
+    'discipline': ['#discipline', '#hardwork', '#habits', '#commitment', '#action'],
+    'ownership': ['#accountability', '#selfworth', '#selfrespect', '#leadership'],
+    'mindset': ['#mindset', '#focus', '#wisdom', '#beyourself', '#optimism'],
+    'courage': ['#courage', '#noregrets', '#bebold', '#facefear'],
+    'growth': ['#growth', '#growthmindset', '#learning', '#creativity', '#resilience', '#better'],
+    'success': ['#purpose', '#productivity', '#vision', '#success'],
+    'peace': ['#mindfulness', '#innerpeace', '#letgo', '#presence', '#positivity'],
+    'default': ['#dailyinspiration', '#motivationalquotes', '#quotes', '#quoteoftheday'],
 }
 
 THEME_KEYWORDS = {
@@ -287,7 +287,7 @@ def build_caption(quote, filename, author=None):
 
     hashtags = pick_hashtags(filename, theme)
     body = f'{sentence1} {sentence2} {sentence3}'
-    return f'{body}\n\n{" ".join(hashtags)}'
+    return body, hashtags
 
 
 BANNED_CAPTION_PHRASE = 'The image states the idea'
@@ -415,6 +415,34 @@ def get_caption_for_image(filename, base_dir=None):
         entry = data.get(filename, {})
         if isinstance(entry, dict):
             return (entry.get('caption') or '').strip()
+    except (OSError, json.JSONDecodeError, TypeError):
+        pass
+    return ''
+
+
+def get_post_text_for_image(filename, base_dir=None):
+    """Full text to post: quote (from the quote field, with attribution) +
+    caption body + hashtags, recombined at the point of posting rather than
+    stored redundantly in the caption field."""
+    try:
+        data = load_captions(base_dir)
+        entry = data.get(filename, {})
+        if not isinstance(entry, dict):
+            return ''
+
+        quote = (entry.get('quote') or '').strip()
+        body = (entry.get('caption') or '').strip()
+        tag_line = ' '.join(entry.get('hashtags') or [])
+
+        parts = []
+        if quote:
+            author = parse_author_from_filename(filename)
+            parts.append(f'"{quote}" — {author}' if author else f'"{quote}"')
+        if body:
+            parts.append(body)
+        if tag_line:
+            parts.append(tag_line)
+        return '\n\n'.join(parts)
     except (OSError, json.JSONDecodeError, TypeError):
         pass
     return ''

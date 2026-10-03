@@ -6,7 +6,7 @@ from datetime import datetime
 import facebook as fb
 from dotenv import load_dotenv
 
-from caption_lib import get_caption_for_image
+from caption_lib import get_post_text_for_image
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
@@ -25,7 +25,7 @@ def log(message):
 
 def load_post_caption(filename):
     try:
-        caption = get_caption_for_image(filename, BASE_DIR)
+        caption = get_post_text_for_image(filename, BASE_DIR)
         if caption:
             return caption
         log(f'No caption for {filename}, posting image only')

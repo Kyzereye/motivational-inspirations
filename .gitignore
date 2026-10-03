@@ -15,6 +15,22 @@ images/
 # Review symlinks (queue order for caption editing)
 review/
 
+# Trend research agent output (generated per run)
+trends/runs/
+trends/research.log
+
+# Transient scratch file for backfill_quotes.py (cleaned up after each batch)
+.backfill_scratch.json
+
+# Generated review pages for backfill_quotes.py (overwritten each run)
+backfill_review.html
+backfill_flagged.html
+
+# Transient scratch file and generated review pages for write_captions.py
+.caption_scratch.json
+caption_review.html
+caption_flagged.html
+
 # Cron / runtime logs
 post.log
 caption_batch.log

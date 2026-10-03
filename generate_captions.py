@@ -272,17 +272,20 @@ def generate_for_filename(filename, captions, force=False):
         if not quote:
             return False
         if should_regenerate_caption(quote, old_caption) or force:
-            caption = build_caption(quote, filename)
+            caption, hashtags = build_caption(quote, filename)
         else:
             caption = old_caption
-        captions[filename] = {'quote': quote, 'caption': caption}
+            hashtags = existing.get('hashtags') or []
+        captions[filename] = {'quote': quote, 'caption': caption, 'hashtags': hashtags}
         return True
 
     if not quote:
         return False
+    body, hashtags = build_caption(quote, filename)
     captions[filename] = {
         'quote': quote,
-        'caption': build_caption(quote, filename),
+        'caption': body,
+        'hashtags': hashtags,
     }
     return True
 

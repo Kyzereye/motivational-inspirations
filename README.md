@@ -33,6 +33,15 @@ python3 ~/Projects/IM-FB-post/generate_captions.py
 
 Skip existing entries unless you pass `--force`.
 
+For images where OCR comes back empty, backfill the quote by having Claude read the image
+directly instead:
+
+```bash
+python3 ~/Projects/IM-FB-post/backfill_quotes.py
+```
+
+Processes one batch (default 25) of queue items missing a quote per run — re-run to continue.
+
 ## Review folder (caption editing)
 
 Symlinks in `queue_backup.txt` order — matches `captions.json`:
