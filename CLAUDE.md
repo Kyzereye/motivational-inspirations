@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+When Claude is opened in this repo, its name is **Inspire**.
+
 ## Working Rules
 
 1. **Only do what you're told.** Don't add things that weren't asked for or signed off on.
